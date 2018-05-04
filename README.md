@@ -214,3 +214,154 @@ INSTALLED_APPS = [
 
 ``` ./manage.py createsuperuser ```
 
+### Making it live!
+
+On settings.py, updated the following:
+
+``` 
+if os.path.exists('env.py'):
+    import env
+```
+
+```
+SECRET_KEY = os.environ.get('SECRET_KEY')
+```
+
+#### Create a new file on the top level called env.py:
+
+```
+import os
+
+os.environ.setdefault("SECRET_KEY", "Copy the secret key into here")
+```
+
+#### Create a new heroku app
+
+On the resources tab, click on the add-ons and select 'postgres' and select the free option.
+
+#### On the settings tab, reveal config vars and check that the DATABASE_URL has been populated.
+
+Add a variable called SECRET-KEY and paste the secret key from your project.
+
+#### Back on your terminal, enter the following to install a library:
+
+``` pip install dj-database-url psycopg2 ```
+
+#### Updated the requirements.txt file:
+
+``` pip freeze > requirements.txt ```
+
+#### On settings.py, add the following:
+
+``` 
+DATABASES = {
+    'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
+}
+```
+
+```
+import dj_database_url
+```
+
+#### Back on the env.py file, update the following:
+
+``` 
+os.environ.setdefault("DATABASE_URL", "Copy the DATABASE_URL from heroku config-vars")
+```
+
+#### Enter the following into the terminal:
+
+```
+./manage.py makemigrations
+```
+
+```
+./manage.py migrate
+```
+
+#### Create superuser:
+
+``` 
+./manage.py createsuperuser 
+```
+
+#### Install whitenoise for JS in heroku:
+
+```
+pip install whitenoise
+```
+
+#### Update the requirements.txt file:
+
+``` pip freeze > requirements.txt ```
+
+#### On settings.py
+
+``` 
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+]
+```
+
+```
+STATIC_URL = '/static/'
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+```
+
+```
+if "DATABASE_URL" in os.environ:
+    DATABASES = {
+        'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
+    }
+else:
+    print("Postgres URL not found, using sqlite instead")
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+```
+
+```
+ALLOWED_HOSTS = ['django-blog-deanflint.c9users.io', 'blog-test-app-df.heroku.com']
+```
+
+
+#### On .gitignore:
+
+```
+*.sqlite3
+*.pyc
+.~c9
+__pycache__
+env.pyc
+```
+
+#### At the root of your app, add a Procfile:
+
+```
+web: gunicorn blog.wsgi:application
+```
+
+#### Now install gunicorn:
+
+```
+pip install gunicorn
+```
+
+#### Update the requirements.txt file:
+
+``` pip freeze > requirements.txt ```
+
