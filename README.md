@@ -6,6 +6,10 @@
 
 ``` mkvirtualenv foo ```
 
+##### Side note: When opening a terminal, to switch back to your virtenv:
+
+``` workon foo ```
+
 #### Install Django:
 
 ``` sudo pip3 install django==1.11 ```
@@ -135,5 +139,78 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 ```
 
+#### models.py
+```
+from django.db import models
+from django.utils import timezone
 
+class Post(models.Model):
+    """ A single blog post """
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    created_date = models.DateTimeField(auto_now_add=True)
+    published_date = models.DateTimeField(blank=True, null=True, default=timezone.now)
+    views = models.IntegerField(default=0)
+    tag = models.CharField(max_length=30, blank=True, null=True)
+    image = models.ImageField(upload_to="img", blank=True, null=True)
+    
+    def __unicode__(self):
+        return self.title
+```
+
+#### forms.py
+```
+from django import forms
+from .models import Post
+
+class BlogPostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ('title', 'content', 'image', 'tag', 'published_date')
+```
+
+#### admin.py
+```
+from django.contrib import admin
+from .models import Post
+
+admin.site.register(Post)
+```
+
+#### In the terminal:
+
+``` pip install pillow ```
+
+#### Now that we've installed a new package, we need to update requirements.txt:
+
+``` pip freeze > requirements.txt ```
+
+#### Now make your migrations:
+
+``` ./manage.py makemigrations ```
+
+``` ./manage.py migrate ```
+
+#### Install:
+
+``` pip install django-forms-bootstrap ```
+
+#### Update INSTALLED_APPS:
+
+```
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'django_forms_bootstrap',
+    'posts',
+]
+```
+
+#### Create superuser:
+
+``` ./manage.py createsuperuser ```
 
