@@ -365,3 +365,8 @@ pip install gunicorn
 
 ``` pip freeze > requirements.txt ```
 
+#### On Heroku, deploy using GitHub
+
+#### Scroll down to 'Manual Deploy' and click on 'Deploy Branch'
+
+#### Finally, click on the 'Automatic deploys' button.
