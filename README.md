@@ -70,3 +70,70 @@ script:
 - SECRET_KEY="whatever" ./manage.py test
 ```
 
+### Directory Structure
+
+####
+
+``` ./manage.py startapp posts ```
+
+#### In the root director, create the following folders:
+
+media
+
+media/img
+
+static
+
+static/css
+
+static/img
+
+static/js
+
+#### In the 'posts' app, create the following folder:
+
+templates
+
+#### In settings.py, add the following:
+
+``` 
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'posts',
+]
+```
+
+```
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',
+            ],
+        },
+    },
+]
+```
+
+```
+STATIC_URL = '/static/'
+STATICFILES_DIR = (os.path.join(BASE_DIR, 'static'), )
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+```
+
+
+
